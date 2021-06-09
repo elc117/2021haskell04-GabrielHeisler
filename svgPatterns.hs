@@ -21,16 +21,18 @@ greenPalette n = [(0, 80+i*10, 0) | i <- [0..n] ]
 rgbPalette :: Int -> [(Int,Int,Int)]
 rgbPalette n = take n $ cycle [(255,0,0),(0,255,0),(0,0,255)]
 
+--bAwPalette :: Int -> [(Int,Int)]
+--bAwPalette n = take n $ cycle [(0,0,0),(255,255,255)]
 
 
 -------------------------------------------------------------------------------
 -- Geração de retângulos em suas posições
 -------------------------------------------------------------------------------
 
-genRectsInLine :: Int -> [Rect]
-genRectsInLine n  = [((m*(w+gap), 0.0), w, h) | m <- [0..fromIntegral (n-1)]]
-  where (w,h) = (50,50)
-        gap = 10
+genRectsInLine :: Int -> Float -> [Rect]
+genRectsInLine n y  = [((m*(w+gap), 100*y), w, h) | m <- [0..fromIntegral (n-1)]]
+  where (w,h) = (100,100)
+        gap = 0
 
 
 -------------------------------------------------------------------------------
@@ -39,13 +41,12 @@ genRectsInLine n  = [((m*(w+gap), 0.0), w, h) | m <- [0..fromIntegral (n-1)]]
 
 -- Gera string representando retângulo SVG 
 -- dadas coordenadas e dimensões do retângulo e uma string com atributos de estilo
-svgRect :: Rect -> String -> String 
-svgRect ((x,y),w,h) style = 
-  printf "<rect x='%.3f' y='%.3f' width='%.2f' height='%.2f' style='%s' />\n" x y w h style
+svgRect :: Rect -> String -> String
+svgRect ((x,y),w,h) = printf "<rect x='%.3f' y='%.3f' width='%.2f' height='%.2f' style='%s' />\n" x y w h
 
 -- String inicial do SVG
 svgBegin :: Float -> Float -> String
-svgBegin w h = printf "<svg width='%.2f' height='%.2f' xmlns='http://www.w3.org/2000/svg'>\n" w h 
+svgBegin = printf "<svg width='%.2f' height='%.2f' xmlns='http://www.w3.org/2000/svg'>\n"
 
 -- String final do SVG
 svgEnd :: String
@@ -66,14 +67,14 @@ svgElements func elements styles = concat $ zipWith func elements styles
 -------------------------------------------------------------------------------
 
 main :: IO ()
-main = do
-  writeFile "rects.svg" $ svgstrs
+main =
+  writeFile "figs.svg" $ svgstrs
   where svgstrs = svgBegin w h ++ svgfigs ++ svgEnd
         svgfigs = svgElements svgRect rects (map svgStyle palette)
-        rects = genRectsInLine nrects
+        rects = [genRectsInLine nrects x | x <- [0, 1..(h/100)]]
         palette = rgbPalette nrects
-        nrects = 10
-        (w,h) = (1500,500) -- width,height da imagem SVG
+        nrects = 8
+        (w,h) = (800,800) -- width,height da imagem SVG
 
 
 

@@ -24,3 +24,4 @@ genCircs n (cx, cy) r = [(nx, cy, r) | nx <- take n [cx, cx+r*2..]]
 
 genReds :: Int -> [(Int, Int, Int)]
 genReds n = [(80+x*10, 0, 0) | x <- [0..n-1]]
+
